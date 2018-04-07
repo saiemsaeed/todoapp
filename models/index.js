@@ -1,5 +1,5 @@
 const Mongoose = require('mongoose');
-Mongoose.connect("mongodb://localhost:27017/TodoApp");
+Mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/TodoApp");
 
 Mongoose.Promise = Promise;
 
