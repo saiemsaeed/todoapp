@@ -18,7 +18,7 @@ exports.createTodo = (req, res) => {
         res.status(201).send(data);
     })
     .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
     })
 };
 
