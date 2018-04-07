@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function (event) {
-    fetch('http://localhost:3000/api/todos')
+    fetch('/api/todos')
         .then(data => data.json())
         .then(todos => addTodos(todos))
         .catch(err => console.log(err));
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         if (event.which === 13) {
             if (this.value === "")
                 return false;
-            fetch('http://localhost:3000/api/todos', {
+            fetch('/api/todos', {
                 body: JSON.stringify({
                     text: this.value
                 }),
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 };
                 e.target.dataset.isCompleted = 'true';
             }
-            fetch(`http://localhost:3000/api/todos/${clickedId}`, {
+            fetch(`/api/todos/${clickedId}`, {
                 body: JSON.stringify(obj),
                 method: 'PUT',
                 headers: {
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         if (e.target.nodeName === "SPAN") {
             e.stopPropagation();
             let clickedId = e.target.parentElement.dataset.id;
-            fetch(`http://localhost:3000/api/todos/${clickedId}`, {
+            fetch(`/api/todos/${clickedId}`, {
                 method: "DELETE",
                 headers: {
                     'content-type': 'application/json'
