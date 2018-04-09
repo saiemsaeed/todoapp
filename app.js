@@ -2,7 +2,8 @@ const express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),    
     PORT = process.env.PORT || 3000,
-    todoRoutes = require('./routes/todos');
+    todoRoutes = require('./routes/todos'),
+    userRoutes = require('./routes/users');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -15,6 +16,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/todos', todoRoutes);
+
+app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => {
     console.log("SERVER IS LISTENING ON PORT", PORT);
