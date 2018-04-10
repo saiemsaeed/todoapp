@@ -1,6 +1,7 @@
 const mongoose = require('mongoose'),
     validator = require('validator'),
-    jwt = require('jsonwebtoken' );
+    jwt = require('jsonwebtoken' ),
+    bCrypt = require('bcryptjs');
 
 let userSchema = new mongoose.Schema({
     email: {
@@ -37,7 +38,8 @@ userSchema.methods.toJSON = function(){
 
     return {
         _id: user._id,
-        email: user.email
+        email: user.email,
+        password: user.password
     }
 }
 
@@ -51,5 +53,37 @@ userSchema.methods.generateAuthToken = function(){
         return token;
     });
 }
+
+userSchema.statics.findByToken = function(token) {
+    let User = this;
+    let decoded;
+
+    try{
+        decoded = jwt.verify(token, 'aabbcc');
+    }catch(e){
+        return Promise.reject('Authentication Token is compromised!');
+    }
+
+    return User.findOne({
+        _id: decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    })
+}
+
+userSchema.pre('save', function(next){
+    let user = this;
+    console.log('in middleware');
+    if(user.isModified('password')){
+        bCrypt.genSalt(10, (err, salt) => {
+            bCrypt.hash(user.password, salt, (err, hash) => {
+                user.password = hash;
+                next();
+            })
+        })
+    }else{
+        next();
+    }
+})
 
 module.exports = mongoose.model('User', userSchema);

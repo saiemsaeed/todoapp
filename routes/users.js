@@ -25,4 +25,23 @@ router.post('/', (req, res) => {
     .catch(err => res.send(err))
 });
 
+let auth = (req, res, next) => {
+    let token = req.header('x-auth');
+
+    db.User.findByToken(token)
+    .then(user => {
+        if(!user){
+            return Promise.reject('Úser Not Authed! You are playing with us seriosly?');
+        }
+        req.user = user;
+        req.token = token;
+        next();
+    })
+    .catch((err) => res.status(401).send(err))
+};
+
+router.post('/me', auth, (req, res) => {
+    res.send(req.user);
+});
+
 module.exports = router;
