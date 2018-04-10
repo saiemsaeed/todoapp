@@ -1,6 +1,6 @@
-const Mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var todoSchema = Mongoose.Schema({
+var todoSchema = new mongoose.Schema({
     text: {
         type: String,
         required: "Todo Text is Required!"
@@ -19,6 +19,8 @@ var todoSchema = Mongoose.Schema({
     }
 });
 
-var Todo = Mongoose.model('Todo', todoSchema);
+
+
+var Todo = mongoose.model('Todo', todoSchema);
 
 module.exports = Todo;

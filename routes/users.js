@@ -9,11 +9,19 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    db.User.create({
+    var body = {
         email: req.body.email,
         password: req.body.password
+    }
+    
+    let user = new db.User(body);
+    db.User.create(user)
+    .then(() => {
+        return user.generateAuthToken();
     })
-    .then(data => res.json(data))
+    .then((token) => {
+        res.header('x-auth', token).send(user);
+    }) 
     .catch(err => res.send(err))
 });
 
