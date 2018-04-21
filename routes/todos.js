@@ -1,15 +1,17 @@
 const express = require('express'),
     router = express.Router(),
     db = require('../models/'),
-    helpers = require('../helpers/todos');
+    helpers = require('../helpers/todos'),
+    auth = require('../middleware/auth');
+    
 
 router.route('/')
-    .get(helpers.getTodos)
-    .post(helpers.createTodo)
+    .get(auth, helpers.getTodos)
+    .post(auth, helpers.createTodo)
 
 router.route('/:todoId')
-    .get(helpers.getTodo)
-    .put(helpers.updateTodo)
-    .delete(helpers.deleteTodo)
+    .get(auth, helpers.getTodo)
+    .put(auth, helpers.updateTodo)
+    .delete(auth, helpers.deleteTodo)
 
 module.exports = router;

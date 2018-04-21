@@ -1,7 +1,9 @@
 const db = require('../models');
 
 exports.getTodos = (req, res) => {
-    db.Todo.find()
+    db.Todo.find({
+        _creator: req.user._id
+    })
     .then((data) => {
         res.json(data);
     })
@@ -12,7 +14,8 @@ exports.getTodos = (req, res) => {
 
 exports.createTodo = (req, res) => {
     db.Todo.create({
-        text: req.body.text
+        text: req.body.text,
+        _creator: req.user._id
     })
     .then((data) => {
         res.status(201).send(data);
@@ -25,7 +28,7 @@ exports.createTodo = (req, res) => {
 
 exports.getTodo = (req, res) => {
     let id = req.params.todoId;
-    db.Todo.findById(id)
+    db.Todo.findOne({id, _creator: req.user._id})
     .then((data) => {
         res.json(data);
     })
@@ -36,7 +39,7 @@ exports.getTodo = (req, res) => {
 
 exports.updateTodo = (req, res) => {
     let id = req.params.todoId;
-    db.Todo.findOneAndUpdate({_id: id}, req.body, {new: true})
+    db.Todo.findOneAndUpdate({_id, _creator: req.user._id}, req.body, {new: true})
     .then((data) => {
         res.status(200).send(data);
     })
@@ -47,7 +50,7 @@ exports.updateTodo = (req, res) => {
 
 exports.deleteTodo = (req, res) => {
     let id = req.params.todoId;
-    db.Todo.findByIdAndRemove(id)
+    db.Todo.findOneAndRemove({id, _creator: req.user._id})
     .then((data) => {
         res.send(data);
     })
