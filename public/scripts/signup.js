@@ -1,5 +1,5 @@
 (() => {
-    if(localStorage.getItem('hi-auth'))
+    if (localStorage.getItem('hi-auth'))
         window.location = './dashboard.html';
 })();
 document.querySelector('#signupBtn').addEventListener('click', () => {
@@ -7,7 +7,7 @@ document.querySelector('#signupBtn').addEventListener('click', () => {
     let password = document.querySelector('#loginPassword').value;
     fetch('/api/users', {
         body: JSON.stringify({
-            email, 
+            email,
             password
         }),
         method: 'POST',
@@ -15,12 +15,16 @@ document.querySelector('#signupBtn').addEventListener('click', () => {
             'content-type': 'application/json'
         }
     })
-    .then(data => {
-        if(data.code === 11000)
-            throw new Error("Sorry, account on this email already exists.");
-            
-        localStorage.setItem("hi-auth", data.headers.get('x-auth'));
-        window.location = './dashboard.html';
-    })
-    .catch(err => alert(err))
+        .then(data => {
+            return data.json();
+        })
+        .then(data => {
+            if (data.code === 11000)
+                throw new Error("Sorry, account on this email already exists.");
+            else {
+                localStorage.setItem("hi-auth", data.headers.get('x-auth'));
+                window.location = './dashboard.html';
+            }
+        })
+        .catch(err => alert(err))
 });
