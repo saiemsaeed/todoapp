@@ -46,7 +46,7 @@ exports.deleteTodo = async(req, res) => {
     try {
         let _id = req.params.todoId;
         const removedTodo = await db.Todo.findOneAndRemove({ _id, _creator: req.user._id });
-        res.status(200).send(removedTodo);        
+        res.status(200).send(removedTodo);       
     } catch (e) {
         res.status(404).send(e);        
     }
