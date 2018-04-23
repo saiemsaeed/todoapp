@@ -1,62 +1,55 @@
 const db = require('../models');
 
-exports.getTodos = (req, res) => {
-    db.Todo.find({
-        _creator: req.user._id
-    })
-    .then((data) => {
-        res.json(data);
-    })
-    .catch((err) => {
+exports.getTodos = async (req, res) => {
+    try {
+        const todos = await db.Todo.find({ _creator: req.user._id });
+        res.status(200).json(todos);
+    } catch (e) {
+        res.status(404).send(e);
+    }
+};
+
+exports.createTodo = async (req, res) => {
+    try {
+        const newTodo = await db.Todo.create({
+            text: req.body.text,
+            _creator: req.user._id
+        });
+        res.status(201).send(newTodo);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+};
+
+
+exports.getTodo = async (req, res) => {
+    try {
+        let _id = req.params.todoId;
+        const todo = await db.Todo.findOne({ _id, _creator: req.user._id });
+        res.status(200).json(todo);
+    } catch (e) {
         res.status(404).send(err);
-    })
+    }
 };
 
-exports.createTodo = (req, res) => {
-    db.Todo.create({
-        text: req.body.text,
-        _creator: req.user._id
-    })
-    .then((data) => {
-        res.status(201).send(data);
-    })
-    .catch((err) => {
-        res.status(400).send(err);
-    })
+exports.updateTodo = async (req, res) => {
+    try {
+        const _id = req.params.todoId;
+        const todo = await db.Todo.findOneAndUpdate({ _id, _creator: req.user._id }, req.body, { new: true });
+        res.status(200).send(todo);
+    } catch (e) {
+        res.status(404).send(e);
+    }
 };
 
-
-exports.getTodo = (req, res) => {
-    let id = req.params.todoId;
-    db.Todo.findOne({id, _creator: req.user._id})
-    .then((data) => {
-        res.json(data);
-    })
-    .catch((err) => {
-        res.send(err);
-    });
-};
-
-exports.updateTodo = (req, res) => {
-    let _id = req.params.todoId;
-    db.Todo.findOneAndUpdate({_id, _creator: req.user._id}, req.body, {new: true})
-    .then((data) => {
-        res.status(200).send(data);
-    })
-    .catch((err) => {
-        res.send(err);
-    });
-};
-
-exports.deleteTodo = (req, res) => {
-    let _id = req.params.todoId;
-    db.Todo.findOneAndRemove({_id, _creator: req.user._id})
-    .then((data) => {
-        res.send(data);
-    })
-    .catch((err) => {
-        res.status(404).send(err);
-    });
+exports.deleteTodo = async(req, res) => {
+    try {
+        let _id = req.params.todoId;
+        const removedTodo = await db.Todo.findOneAndRemove({ _id, _creator: req.user._id });
+        res.status(200).send(removedTodo);        
+    } catch (e) {
+        res.status(404).send(e);        
+    }
 };
 
 module.exports = exports;

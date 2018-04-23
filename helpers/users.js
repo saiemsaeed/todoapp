@@ -1,50 +1,52 @@
 const db = require('../models')
-    _ = require('lodash');
+_ = require('lodash');
 
-exports.getUsers = (req, res) => {
-    db.User.find()
-    .then(data => res.send(data))
-    .catch(err => console.log(err));
+exports.getUsers = async (req, res) => {
+    try {
+        let users = await db.User.find();
+        res.status(200).send(users);
+    }
+    catch (e) {
+        res.status(400).send();
+    }
 };
 
-exports.addUser = (req, res) => {
-    var body = _.pick(req.body, ['email', 'password']);
-    let user = new db.User(body);
-
-    db.User.create(user)
-    .then(() => {
-        return user.generateAuthToken();
-    })
-    .then(token => {
+exports.addUser = async (req, res) => {
+    try {
+        const body = _.pick(req.body, ['email', 'password']);
+        const user = new db.User(body);
+        const newUser = await db.User.create(user);
+        const token = await user.generateAuthToken();
         res.status(201).header('x-auth', token).send(user);
-    }) 
-    .catch(err => res.send(err))
+
+    } catch (e) {
+        res.status(400).send();
+    }
 };
 
-exports.loginUser = (req, res) => {
-    let body = _.pick(req.body, ['email', 'password']);
-    db.User.findByCredentials(body.email, body.password)
-    .then((user) => {
-        return user.generateAuthToken();
-    })
-    .then(token => {
+exports.loginUser = async (req, res) => {
+    try {
+        const body = _.pick(req.body, ['email', 'password']);
+        const user = await db.User.findByCredentials(body.email, body.password);
+        const token = await user.generateAuthToken();
         res.status(200).header('x-auth', token).send();
-    })
-    .catch(err => res.status(404).send(err))
+    } catch (e) {
+        res.status(404).send();
+    }
 }
 
 exports.getMe = (req, res) => {
     res.send(req.user);
 }
 
-exports.logoutMe = (req, res) => {
-    req.user.removeToken(req.token)
-    .then(() => {
+exports.logoutMe = async (req, res) => {
+    try {
+        await req.user.removeToken(req.token);
         res.status(200).send();
-    })
-    .catch(() => {
+    } catch (e) {
         res.status(400).send();
-    })
+
+    }
 }
 
 module.exports = exports;
