@@ -1,5 +1,27 @@
+(() => {
+    if(!localStorage.getItem('hi-auth'))
+        window.location = './';
+})();
+
+document.querySelector('#logoutBtn').addEventListener('click', () => {
+    fetch('/api/users/me/logout', {
+        headers: {
+            'x-auth': localStorage.getItem('hi-auth')
+        }
+    })
+    .then(() => {
+        localStorage.removeItem('hi-auth');
+        window.location = "./";
+    })
+    .catch((err) => alert(err))
+});
+
 document.addEventListener('DOMContentLoaded', function (event) {
-    fetch('/api/todos')
+    fetch('/api/todos', {
+        headers: {
+            'x-auth': localStorage.getItem('hi-auth')
+        }
+    })
         .then(data => data.json())
         .then(todos => addTodos(todos))
         .catch(err => console.log(err));
@@ -10,11 +32,12 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 return false;
             fetch('/api/todos', {
                 body: JSON.stringify({
-                    text: this.value
+                    'text': this.value
                 }),
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
+                    'x-auth': localStorage.getItem('hi-auth')                    
                 }
             })
                 .then(data => {
@@ -33,14 +56,14 @@ document.addEventListener('DOMContentLoaded', function (event) {
             let clickedId = e.target.dataset.id;
             let isCompleted = e.target.dataset.isCompleted;
             let obj;
-            if(isCompleted == 'true'){
+            if (isCompleted == 'true') {
                 obj = {
                     isCompleted: 'false',
                     completedOn: null
                 };
                 e.target.dataset.isCompleted = 'false';
             }
-            else{
+            else {
                 obj = {
                     isCompleted: 'true',
                     completedOn: Date.now()
@@ -51,7 +74,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
                 body: JSON.stringify(obj),
                 method: 'PUT',
                 headers: {
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
+                    'x-auth': localStorage.getItem('hi-auth')
                 }
             })
                 .then(data => e.target.classList.toggle('done'))
@@ -66,7 +90,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
             fetch(`/api/todos/${clickedId}`, {
                 method: "DELETE",
                 headers: {
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
+                    'x-auth': localStorage.getItem('hi-auth')
                 }
             })
                 .then(data => e.target.parentElement.remove())

@@ -38,7 +38,7 @@ exports.getTodo = (req, res) => {
 };
 
 exports.updateTodo = (req, res) => {
-    let id = req.params.todoId;
+    let _id = req.params.todoId;
     db.Todo.findOneAndUpdate({_id, _creator: req.user._id}, req.body, {new: true})
     .then((data) => {
         res.status(200).send(data);
@@ -49,8 +49,8 @@ exports.updateTodo = (req, res) => {
 };
 
 exports.deleteTodo = (req, res) => {
-    let id = req.params.todoId;
-    db.Todo.findOneAndRemove({id, _creator: req.user._id})
+    let _id = req.params.todoId;
+    db.Todo.findOneAndRemove({_id, _creator: req.user._id})
     .then((data) => {
         res.send(data);
     })

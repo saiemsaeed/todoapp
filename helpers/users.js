@@ -28,9 +28,9 @@ exports.loginUser = (req, res) => {
         return user.generateAuthToken();
     })
     .then(token => {
-        res.status(200).header('x-auth', token).send(user);
+        res.status(200).header('x-auth', token).send();
     })
-    .catch(err => res.status(404).send())
+    .catch(err => res.status(404).send(err))
 }
 
 exports.getMe = (req, res) => {
